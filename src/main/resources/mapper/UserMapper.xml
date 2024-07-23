@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "com.bjca.rcbademo.dao.UserMapper">
+
+    <resultMap id="UserDetailMap" type="com.bjca.rcbademo.entity.sysUser">
+        <id column="user_id" property="id"></id>
+        <result column="username" property="username"></result>
+        <result column="nickname" property="nickname"></result>
+        <result column="birthday" property="birthday"></result>
+        <result column="gender" property="gender"></result>
+        <result column="createtime" property="createtime"></result>
+        <result column="updatetime" property="updatetime"></result>
+        <collection property="roles" ofType="com.bjca.rcbademo.entity.sysRole">
+            <id column="role_id" property="id"></id>
+            <result column="rolename" property="rolename"></result>
+            <collection property="permissions" ofType="com.bjca.rcbademo.entity.sysPermission">
+                <id column="permission_id" property="id"></id>
+                <result column="permissionname" property="permissionname"></result>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <select id="ShowUserMegById" resultMap="UserDetailMap">
+        SELECT user_id,username,nickname,birthday,gender,sys_user.createtime,sys_user.updatetime
+             ,sys_user_role.role_id,rolename,permission_id,permissionname from sys_user
+        left join sys_user_role on sys_user.id = sys_user_role.user_id
+        left join sys_role_permission on sys_user_role.role_id=sys_role_permission.role_id
+        left join sys_permission on sys_permission.id = sys_role_permission.permission_id
+        left join sys_role on sys_role.id = sys_user_role.role_id
+        where sys_user.id = #{id};
+    </select>
+</mapper>
